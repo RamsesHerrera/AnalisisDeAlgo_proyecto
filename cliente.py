@@ -29,8 +29,9 @@ def conectar_servidor(nombre_jugador, eleccion):
     mensaje = nombre_jugador + ',' + eleccion_num
     cliente_socket.send(mensaje.encode())
 
-    # Limpiar la pantalla antes de mostrar los resultados
+    # Limpiar la pantalla y mostrar mensaje de espera
     limpiar_pantalla()
+    tk.Label(root, text="Esperando resultados...").pack(pady=20)
 
     # Recibir y mostrar el resultado del servidor
     resultados = ""
@@ -40,6 +41,7 @@ def conectar_servidor(nombre_jugador, eleccion):
             break
         resultados += resultado + "\n"
 
+    limpiar_pantalla()
     tk.Label(root, text="Resultados:").pack(pady=10)
     tk.Label(root, text=resultados).pack(pady=10)
 
