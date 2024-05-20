@@ -1,62 +1,68 @@
 import socket
-import os
+import tkinter as tk
+from tkinter import messagebox
 
 def limpiar_pantalla():
-    # Detectar el sistema operativo y ejecutar el comando correspondiente
-    if os.name == 'nt':
-        os.system('cls')  # Comando para Windows
-    else:
-        os.system('clear')  # Comando para Unix/Linux/Mac
+    for widget in root.winfo_children():
+        widget.destroy()
 
 def jugar(nombre_jugador):
     limpiar_pantalla()
-    print(f"{nombre_jugador}, selecciona una opción:")
-    print("1. Piedra")
-    print("2. Papel")
-    print("3. Tijeras")
-    opcion = input("Ingresa el número correspondiente a tu elección: ")
-    while opcion not in ['1', '2', '3']:
-        print("Opción inválida. Por favor, selecciona 1, 2 o 3.")
-        opcion = input("Ingresa el número correspondiente a tu elección: ")
-    return opcion
+    tk.Label(root, text=f"{nombre_jugador}, selecciona una opción:").pack(pady=10)
+    opciones = ["Piedra", "Papel", "Tijeras"]
+    var_opcion = tk.StringVar(value=opciones[0])
+    
+    for opcion in opciones:
+        tk.Radiobutton(root, text=opcion, variable=var_opcion, value=opcion).pack(anchor=tk.W)
+    
+    tk.Button(root, text="Enviar", command=lambda: enviar_eleccion(nombre_jugador, var_opcion.get())).pack(pady=10)
 
-def conectar_servidor():
+def conectar_servidor(nombre_jugador, eleccion):
     servidor_ip = "148.210.173.202"  # Dirección IP del servidor
     servidor_puerto = 9999
 
     cliente_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     cliente_socket.connect((servidor_ip, servidor_puerto))
 
-    # Obtener el nombre del jugador
-    limpiar_pantalla()
-    nombre_jugador = input("Ingresa tu nombre: ")
-
     # Enviar el nombre del jugador y su elección al servidor
-    eleccion = jugar(nombre_jugador)
-    mensaje = nombre_jugador + ',' + eleccion
+    eleccion_num = {"Piedra": "1", "Papel": "2", "Tijeras": "3"}[eleccion]
+    mensaje = nombre_jugador + ',' + eleccion_num
     cliente_socket.send(mensaje.encode())
 
     # Limpiar la pantalla antes de mostrar los resultados
     limpiar_pantalla()
 
     # Recibir y mostrar el resultado del servidor
-    print("Esperando resultados...")
+    resultados = ""
     while True:
         resultado = cliente_socket.recv(1024).decode()
         if not resultado:
             break
-        limpiar_pantalla()
-        print(resultado)
+        resultados += resultado + "\n"
+
+    tk.Label(root, text="Resultados:").pack(pady=10)
+    tk.Label(root, text=resultados).pack(pady=10)
+
+    tk.Button(root, text="Jugar otra vez", command=iniciar).pack(pady=5)
+    tk.Button(root, text="Salir", command=root.quit).pack(pady=5)
 
     # Cerrar la conexión
     cliente_socket.close()
 
-def jugar_nueva_partida():
-    respuesta = input("¿Deseas jugar una nueva partida? (s/n): ")
-    return respuesta.lower() == "s"
+def enviar_eleccion(nombre_jugador, eleccion):
+    conectar_servidor(nombre_jugador, eleccion)
 
-while True:
-    conectar_servidor()
-    if not jugar_nueva_partida():
-        break
+def iniciar():
     limpiar_pantalla()
+    tk.Label(root, text="Ingresa tu nombre:").pack(pady=10)
+    nombre_entry = tk.Entry(root)
+    nombre_entry.pack(pady=10)
+    tk.Button(root, text="Ingresar", command=lambda: jugar(nombre_entry.get())).pack(pady=10)
+
+root = tk.Tk()
+root.title("Piedra, Papel o Tijeras")
+root.geometry("400x300")
+
+iniciar()
+
+root.mainloop()
