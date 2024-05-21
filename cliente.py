@@ -21,7 +21,7 @@ def jugar(nombre_jugador):
     return opcion
 
 def conectar_servidor():
-    servidor_ip = "192.168.1.76"  # Dirección IP del servidor
+    servidor_ip = "148.210.173.202"  # Dirección IP del servidor
     servidor_puerto = 9999
 
     cliente_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
