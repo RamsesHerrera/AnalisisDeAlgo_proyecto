@@ -1,6 +1,6 @@
 import socket
 import time
-
+num_jugadores = 4
 def jugar_ppt(jugadores):
     resultados = {}
     puntos = {}
@@ -47,7 +47,7 @@ def manejar_conexion(cliente_socket, cliente_direccion, jugadores, sockets_clien
         sockets_clientes[nombre] = cliente_socket
 
         # Verificar si todos los jugadores han elegido
-        if len(jugadores) == 4: # Cambiado para admitir 4 jugadores
+        if len(jugadores) == num_jugadores: # Cambiado para admitir 4 jugadores
             # Calcular los resultados y los puntos
             resultados, puntos = jugar_ppt(jugadores)
 
@@ -93,7 +93,7 @@ def iniciar_servidor():
 
     servidor_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     servidor_socket.bind((servidor_ip, servidor_puerto))
-    servidor_socket.listen(4) # Aumentado el número máximo de conexiones en espera a 4
+    servidor_socket.listen(num_jugadores) # Aumentado el número máximo de conexiones en espera a 4
 
     print("Servidor escuchando en", servidor_ip, "puerto", servidor_puerto)
 
@@ -103,7 +103,7 @@ def iniciar_servidor():
     while True:
         print("Esperando jugadores...")
         
-        while len(jugadores) < 4: # Cambiado para admitir 4 jugadores
+        while len(jugadores) < num_jugadores: # Cambiado para admitir 4 jugadores
             cliente_socket, cliente_direccion = servidor_socket.accept()
             manejar_conexion(cliente_socket, cliente_direccion, jugadores, sockets_clientes)
 

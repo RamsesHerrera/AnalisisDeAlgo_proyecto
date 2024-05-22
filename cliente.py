@@ -18,7 +18,7 @@ def jugar(nombre_jugador):
     tk.Button(root, text="Enviar", command=lambda: enviar_eleccion(nombre_jugador, var_opcion.get())).pack(pady=10)
 
 def conectar_servidor(nombre_jugador, eleccion):
-    servidor_ip = "148.210.173.202"  # Dirección IP del servidor
+    servidor_ip = "192.168.1.76"  # Dirección IP del servidor
     servidor_puerto = 9999
 
     cliente_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -32,6 +32,7 @@ def conectar_servidor(nombre_jugador, eleccion):
     # Limpiar la pantalla y mostrar mensaje de espera
     limpiar_pantalla()
     tk.Label(root, text="Esperando resultados...").pack(pady=20)
+    root.update()  # Actualiza la pantalla inmediatamente
 
     # Recibir y mostrar el resultado del servidor
     resultados = ""
@@ -52,6 +53,12 @@ def conectar_servidor(nombre_jugador, eleccion):
     cliente_socket.close()
 
 def enviar_eleccion(nombre_jugador, eleccion):
+    # Cambiar la pantalla a "Esperando resultados" antes de conectar al servidor
+    limpiar_pantalla()
+    tk.Label(root, text="Esperando resultados...").pack(pady=20)
+    root.update()  # Actualiza la pantalla inmediatamente
+
+    # Conectar al servidor y enviar la elección
     conectar_servidor(nombre_jugador, eleccion)
 
 def iniciar():
